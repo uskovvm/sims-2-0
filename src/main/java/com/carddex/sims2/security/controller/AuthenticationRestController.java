@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.carddex.sims2.model.Module;
 import com.carddex.sims2.preferences.ResponseConstants;
 import com.carddex.sims2.restapi.objects.SModule;
 import com.carddex.sims2.security.JwtAuthenticationRequest;
 import com.carddex.sims2.security.JwtTokenUtil;
 import com.carddex.sims2.security.JwtUser;
 import com.carddex.sims2.security.service.JwtAuthenticationResponse;
+import com.carddex.sims2.security.service.ModuleService;
 import com.carddex.sims2.security.service.UserAuthResponse;
 
 @RestController
@@ -45,13 +47,18 @@ public class AuthenticationRestController {
 	@Autowired
 	@Qualifier("jwtUserDetailsService")
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private ModuleService moduleService;
 
 	@RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
 			throws AuthenticationException {
 
 		try {
+			
 			authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+			
 		} catch (AuthenticationException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new UserAuthResponse(
 					ResponseConstants.RESPONSE_ERROR, ResponseConstants.RESPONSE_DESCRIPTION_ERROR));
@@ -83,12 +90,9 @@ public class AuthenticationRestController {
 	
 	@RequestMapping(value = "/core/api/modules", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<List<SModule>> getModules() {
-		SModule module = new SModule(new Long(1), "Module Name", "Module Description", true);
+	public ResponseEntity<List<Module>> getModules() {
 
-		List<SModule> result = new ArrayList<SModule>();
-		result.add(module);
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+		return ResponseEntity.ok(moduleService.loadAllModules());
 	}
 
 

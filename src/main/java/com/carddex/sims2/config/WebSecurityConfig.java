@@ -79,8 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/**").permitAll()
             .anyRequest().authenticated();
 
-       httpSecurity
-            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+       //httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         // disable page caching
         httpSecurity
@@ -92,7 +91,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         // AuthenticationTokenFilter will ignore the below paths
-        web
+        
+    	//web.ignoring().antMatchers("/**/**");
+            
+    }
+    //@Override
+    public void configure_COPY(WebSecurity web) throws Exception {
+        // AuthenticationTokenFilter will ignore the below paths
+        
+    	web
             .ignoring()
             .antMatchers(
                 HttpMethod.POST,
@@ -116,5 +123,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .ignoring()
             .antMatchers("/h2-console/**/**");
+            
     }
+
 }
