@@ -62,3 +62,9 @@ INSERT INTO ROLES_PRIVILEGES (ROLE_ID, PRIVILEGE_ID) VALUES (2,	14);
 INSERT INTO ROLES_PRIVILEGES (ROLE_ID, PRIVILEGE_ID) VALUES (2,	15);
 INSERT INTO ROLES_PRIVILEGES (ROLE_ID, PRIVILEGE_ID) VALUES (2,	16);
 
+INSERT INTO MODULES (ID, NAME, DESCRIPTION, ENABLED) VALUES (1,	'СКУД', 'Управление турникетами', true);
+INSERT INTO MODULES (ID, NAME, DESCRIPTION, ENABLED) VALUES (2,	'Персонал', 'Настройка аккаунтов, пользователей и разрешений', true);
+INSERT INTO MODULES (ID, NAME, DESCRIPTION, ENABLED) VALUES (3,	'Отчёты', 'Отчёты по проходам, рабочему времени и другое', true);
+INSERT INTO MODULES (ID, NAME, DESCRIPTION, ENABLED) VALUES (4,	'Зоны доступа', 'Создание, настройка и редактирования зон доступа', true);
+INSERT INTO MODULES (ID, NAME, DESCRIPTION, ENABLED) VALUES (5,	'Календарь', 'Создание и настройка календарей', true);
+

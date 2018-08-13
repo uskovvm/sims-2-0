@@ -16,13 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.carddex.sim.model.security.Role;
-import com.carddex.sim.model.security.RoleName;
-import com.carddex.sim.model.security.User;
-import com.carddex.sim.security.JwtTokenUtil;
-import com.carddex.sim.security.JwtUser;
-import com.carddex.sim.security.JwtUserFactory;
-import com.carddex.sim.security.service.JwtUserDetailsService;
+import com.carddex.sims2.model.security.Role;
+import com.carddex.sims2.model.security.RoleName;
+import com.carddex.sims2.model.security.User;
+import com.carddex.sims2.security.JwtTokenUtil;
+import com.carddex.sims2.security.JwtUser;
+import com.carddex.sims2.security.JwtUserFactory;
+import com.carddex.sims2.security.service.JwtUserDetailsService;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;

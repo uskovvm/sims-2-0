@@ -13,8 +13,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.carddex.sim.security.JwtTokenUtil;
-import com.carddex.sim.security.JwtUser;
+import com.carddex.sims2.security.JwtTokenUtil;
+import com.carddex.sims2.security.JwtUser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
