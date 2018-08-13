@@ -1,0 +1,100 @@
+{
+CMD
+  'M1' - LED 1 Off
+  'M2' - LED 2 Off
+  'M3' - LED 3 Off
+  'M4' - LED 4 Off
+  'Mq' - LED 1 ON
+  'Mr' - LED 2 ON
+  'Ms' - LED 3 ON
+  'Mt' - LED 4 ON
+  'M6' - Signal
+  'AVR' - get version
+  'QN' - get device number
+    <<< result 'ND' <VNID> <CRC8>
+      VNID - 4 byte inner ID
+      CRC8 - 1 byte CRC
+
+  CC 66 01 60 - request key data
+
+  'QART' <VNID> - send vnid
+    VNID - 4 byte inner ID
+    <<< result 2 byte
+      'BP' - ok
+
+  CC 66 <SECT> <KT> - read sector
+    SECT - sector number (1 - card base data)
+    KT - key type A or B (60 or 61)
+    <<< result 2 bytes
+      AA E1 - card reader die
+      AA E2 - bad shersh
+      AA 42 - no card
+      AA E3 - authentification error
+      AA E4 - read error
+      AA 14 - bad CRC
+      AA C4 - ok
+        >>> read sector GAM
+          <<< result 8 bytes GAM
+            >>> read sector data
+
+  CC 37 <GAM> - read 8 byte GAM
+    GAM - 8 bytes
+    <<< result 2 byte
+      AA C7 - ok
+      <<< result 8 bytes GAM ???
+
+  CC 44 <DATA> <ID> <SECT> <KT> <CRC> - card key query
+    DATA - 16 bytes data
+    ID - 4 byte ID
+    SECT - sector number (1 - card base data)
+    KT - key type A or B (60 or 61)
+    CRC - 2 byte CRC
+    <<< result 8 byte GAM
+      >>> send 24 byte key data
+        <<< result 2 bytes
+          AA C5 - ok
+          45 E1 - card reader die
+          45 E2 - bad shersh
+          45 42 - no card
+          45 E3 - authentification error
+          45 E5 - write error
+          45 14 - bad CRC
+          45 33 - bad ID
+
+  CC 22 <GAM> - query device
+    GAM - 8 bytes
+    <<< result 8 bytes, all must be zero
+
+  CC 55 <DATA> <SECT> <KT> <CRC> - write sector
+    DATA - 48 bytes sector data
+    SECT - sector number (1 - card base data)
+    KT - key type A or B (60 or 61)
+    CRC - 2 byte CRC
+    <<< result 8 byte GAM
+      >>> send 65 bytes sector data
+        <<< result 2 bytes
+          AA C5 - ok
+          45 E1 - card reader die
+          45 E2 - bad shersh
+          45 42 - no card
+          45 E3 - authentification error
+          45 E5 - write error
+          45 14 - bad CRC
+          45 33 - bad ID
+
+  CC 11 <KEY> <KT> <CRC> - write key
+    KEY - 12 bytes key data
+    KT - key type A or B (60 or 61)
+    CRC - 2 byte CRC
+    <<< result 8 bytes
+      >>> send 16 bytes key data
+        <<< result 2 bytes
+          'OK' - ok
+          45 E1 - card reader die
+          45 E2 - key write error
+          45 14 - bad CRC 14
+
+  CC 15 'AYF' <NOM_CR> <K1> <K2> <K3> <K4> <K5> <K6> <K7> <K8> - send key
+    NOM_CR - 4 bytes
+    K1..K8 - 4 bytes
+}
