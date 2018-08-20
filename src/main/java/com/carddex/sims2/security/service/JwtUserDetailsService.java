@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.carddex.sims2.model.security.User;
 import com.carddex.sims2.security.JwtUserFactory;
+import com.carddex.sims2.security.SUser;
 import com.carddex.sims2.security.repository.UserRepository;
 
 @Service
@@ -17,7 +18,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public SUser loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
 
         if (user == null) {

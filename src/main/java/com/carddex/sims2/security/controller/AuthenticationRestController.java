@@ -3,6 +3,7 @@ package com.carddex.sims2.security.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carddex.sims2.model.Module;
 import com.carddex.sims2.preferences.ResponseConstants;
-import com.carddex.sims2.restapi.objects.SModule;
+import com.carddex.sims2.rest.dto.DepartmentsResp;
+import com.carddex.sims2.rest.dto.ZonesResp;
 import com.carddex.sims2.security.JwtAuthenticationRequest;
 import com.carddex.sims2.security.JwtTokenUtil;
 import com.carddex.sims2.security.JwtUser;
+import com.carddex.sims2.security.SUser;
+import com.carddex.sims2.security.service.DeparmentService;
 import com.carddex.sims2.security.service.JwtAuthenticationResponse;
 import com.carddex.sims2.security.service.ModuleService;
 import com.carddex.sims2.security.service.UserAuthResponse;
+import com.carddex.sims2.security.service.ZoneService;
 
 @RestController
 public class AuthenticationRestController {
@@ -51,6 +57,14 @@ public class AuthenticationRestController {
 	@Autowired
 	private ModuleService moduleService;
 
+	@Autowired
+	private DeparmentService departmentService;
+
+	@Autowired
+	private ZoneService zoneService;
+	
+
+	
 	@RequestMapping(value = "${jwt.route.authentication.path}", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
 			throws AuthenticationException {
@@ -67,7 +81,7 @@ public class AuthenticationRestController {
 					ResponseConstants.RESPONSE_ERROR, ResponseConstants.RESPONSE_DESCRIPTION_ERROR));
 		}
 
-		JwtUser userDetails = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		SUser userDetails = (SUser) userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 		String token = jwtTokenUtil.generateToken(userDetails);
 
 		return ResponseEntity.ok(new UserAuthResponse(token, userDetails));
@@ -93,6 +107,43 @@ public class AuthenticationRestController {
 	public ResponseEntity<List<Module>> getModules() {
 
 		return ResponseEntity.ok(moduleService.loadAllModules());
+	}
+
+	@RequestMapping(value = "personnel/api/departments", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<DepartmentsResp> getDepartments() {
+		
+		DepartmentsResp result = departmentService.loadAlldepartments();
+		return ResponseEntity.ok(result);
+	}
+
+	@RequestMapping(value = "/zones/api/zones", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ZonesResp> getZones() {
+		
+		ZonesResp result = zoneService.loadAll();
+		return ResponseEntity.ok(result);
+	}
+
+	@RequestMapping(value = "/core/api/permission/objects", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<List> getPermissionObjects(
+			@RequestParam(name = "userId", required = false, defaultValue = "0") Long userId,
+			@RequestParam(name = "roleId", required = false, defaultValue = "0") Long roleId,
+			@RequestParam(name = "id") Long id) {
+
+		List result = new ArrayList();
+		result.add(new Long(1));
+		result.add(new Long(2));
+		result.add(new Long(3));
+		result.add(new Long(4));
+		result.add(new Long(5));
+		result.add(new Long(6));
+		result.add(new Long(7));
+		result.add(new Long(8));
+		result.add(new Long(9));
+//
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
 

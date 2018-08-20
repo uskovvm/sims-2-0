@@ -96,6 +96,22 @@
 			<version>${findbugs.version}</version>
 		</dependency>
 
+		<!-- Websockets -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-messaging</artifactId>
+			<version>${spring-security.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -106,55 +122,85 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web-services</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
 
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>${docker-maven-plugin.version}</version>
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>${docker-maven-plugin.version}</version>
 
-				<configuration>
-					<imageName>hubae/jwt-spring-security-demo</imageName>
-					<baseImage>openjdk:8</baseImage>
-					<imageTags>
-						<imageTag>${project.version}</imageTag>
-						<imageTag>latest</imageTag>
-					</imageTags>
+					<configuration>
+						<imageName>hubae/jwt-spring-security-demo</imageName>
+						<baseImage>openjdk:8</baseImage>
+						<imageTags>
+							<imageTag>${project.version}</imageTag>
+							<imageTag>latest</imageTag>
+						</imageTags>
 
-					<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+						<entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
 
-					<!-- copy the service's jar file from target into the root directory 
-						of the image -->
-					<resources>
-						<resource>
-							<targetPath>/</targetPath>
-							<directory>${project.build.directory}</directory>
-							<include>${project.build.finalName}.jar</include>
-						</resource>
-					</resources>
+						<!-- copy the service's jar file from target into the root directory 
+							of the image -->
+						<resources>
+							<resource>
+								<targetPath>/</targetPath>
+								<directory>${project.build.directory}</directory>
+								<include>${project.build.finalName}.jar</include>
+							</resource>
+						</resources>
 
-					<serverId>docker-hub</serverId>
-					<registryUrl>https://index.docker.io/v1/</registryUrl>
-				</configuration>
-			</plugin>
-		</plugins>
+						<serverId>docker-hub</serverId>
+						<registryUrl>https://index.docker.io/v1/</registryUrl>
+					</configuration>
+				</plugin>
+				<!-- tag::wsdl[] -->
+				<plugin>
+					<groupId>org.jvnet.jaxb2.maven2</groupId>
+					<artifactId>maven-jaxb2-plugin</artifactId>
+					<version>0.12.3</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<schemaLanguage>WSDL</schemaLanguage>
+						<generatePackage>hello.wsdl</generatePackage>
+						<schemas>
+							<schema>
+								<url>http://172.16.3.15/carddex_up/ws/carddex_make?WSDL</url>
+							</schema>
+						</schemas>
+					</configuration>
+				</plugin>
+				<!-- end::wsdl[] -->
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<profiles>

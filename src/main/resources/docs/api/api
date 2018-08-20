@@ -57,23 +57,22 @@ POST /core/api/login
 
 Возвращаемое значение:
 В случае успеха:
+
 {
-  token:'...'                    // токен
-  status: 'success',             // статус операции
-  description: 'Login Success',  // описание статуса
-  response: {                    // информация о залогинном пользователе
-    id: [number],                // ид пользователя
-    username: [string],          // имя пользователя
-    blocked: [number],           // аккаунт заблокирован
-    registerDate: [number],      // дата регистрации аккаунта
-    roles: [
-      [...number]                // ид ролей пользователя
-    ],
-    permissions: [               // права пользователя
-      [...number]                // ид разрешений
-    ]
+  "token" : [string],				// токен
+  "status" : "success",				// статус операции			//? Если Response code = 200, зачем это поле? 
+  "description" : "Login Success",	// оисание статуса операции	//? Если Response code = 200, зачем это поле?
+  "response" : {					// информация о залогинном пользователе
+    "id" : [number],				// ид пользователя
+    "username" : [string],			// имя пользователя
+    "blocked" : [number],			// аккаунт заблокирован		//? Это поле нужно?
+    "registerDate" : [numer],		// дата регистрации аккаунта //? Тип поля number или лучше date?
+    "avatar" : [string],			//
+    "roles" : [...number],			// ид ролей пользователя
+    "permissions" : [...number]		// права пользователя, ид разрешений
   }
 }
+
 В случае ошибки:
 {
   status: 'error',               // статус операции
@@ -279,7 +278,7 @@ POST /core/api/roles/permissions
 }
 
 
---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------Уточнить стуктуру
 Получить доступные порты
 GET /core/api/ports
 
@@ -356,16 +355,18 @@ GET /core/api/identification/types
 ]
 
 
---------------------------------------------------------------------------------
+--------------------------------------------------------------------------------Не соответствует.
 Получить список устройств
 GET /core/api/device/types
 
+
+//api
 Возвращаемое значение
 [
   {
     id: [number],                   // ид типа оборудования
     name: [string],                 // название девайса
-    accessTypeId: [number],					// тип контроля доступа (1 - для одной зоны, 2 - для двух)
+    accessTypeId: [number],			// тип контроля доступа (1 - для одной зоны, 2 - для двух)
     connections: [                  // доступные соединения
       {
         id: [number],               // ид типа 
@@ -384,6 +385,17 @@ GET /core/api/device/types
   },
   ...
 ]
+
+//Бэкенд возвращает
+[
+  {
+    id: [number],                   // ид типа оборудования
+    name: [string],                 // название девайса
+	description:[string]
+  },
+  ...
+]
+
 
 
 --------------------------------------------------------------------------------
@@ -613,61 +625,87 @@ POST /core/api/cluster
 >> Модуль ACS                                                                 >>
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 --------------------------------------------------------------------------------
-Получить список подключенных устройств
-GET /acs/api/devices
+Получить список подключенных устройств	{?? Структура возвращаемого объекта отличается от описаной в АПИ ??}
+GET /acs/api/devices	
 
 Параметры:
-typeId: [number][optional]												// тип запрашиваемого устройства
+typeId: [number][optional]						// тип запрашиваемого устройства
 limit: [number][optional][default=100]
 offset: [number][optional][default=0]
 
 Возвращаемое значение:
 {
   pager: {
-    totalRows: [number]                           // всего записей
+    totalRows: [number]                         // всего записей
   },
   rows: [
     {
-      id: [number],                               // ид установленного устройства
-      name: [string],                             // название устройства
-      description: [string],                      // описание устройства
-      enabled: [boolean],                         // включен
-      serialNumber: [string],                     // серийный номер
+      id: [number],                             // ид установленного устройства
+      name: [string],                           // название устройства
+      description: [string],                    // описание устройства
+      enabled: [boolean],                       // включен
+      serialNumber: [string],                   // серийный номер
       connection: {
-        typeId: [number],													// ид типа устройства
-        connectionTypeId: [number],               // ид типа соединения
-        protocolId: [number],                     // ид типа протокола
-        portId: [number],                         // ид порта
-        ip: [string][optional]                    // ip-адрес
+        typeId: [number],						// ид типа устройства
+        connectionTypeId: [number],             // ид типа соединения
+        protocolId: [number],                   // ид типа протокола
+        portId: [number],                       // ид порта
+        ip: [string][optional]                  // ip-адрес
       },
       device: {
-        idx: [number][optional],                  // порядок следования
-        identificationTypeId: [number],           // тип устройства идентификации
-        broken: [boolean][optional],              // устройство неисправно
-        invert: [boolean][optional],              // устройство инвертировано
-        cardAutoreg: [boolean][optional],					// авторегистрация карт 
+        idx: [number][optional],                // порядок следования
+        identificationTypeId: [number],         // тип устройства идентификации
+        broken: [boolean][optional],            // устройство неисправно
+        invert: [boolean][optional],            // устройство инвертировано
+        cardAutoreg: [boolean][optional],		// авторегистрация карт 
         directionOpenMask: [[number], [number]][optional],// битовая маска для состояния устройства (0 - закрыто, 1 - открыто)
-        wdtChannel: [number][optional],           // ид канала таймера
-        state: [number][optional],                // состояния дверного контроллера (для дверей) или калитки
+        wdtChannel: [number][optional],         // ид канала таймера
+        state: [number][optional],              // состояния дверного контроллера (для дверей) или калитки
         
-        soundEnabled: [boolean][optional],				// включена ли звуковая сигнализация на устройстве (для дверных контроллеров)
-        lockTimeout: [number][optional],					// таймаут замка (для дверных контроллеров)
-        openDoorTimeout: [number][optional],			// таймаут открытой двери (для дверных контроллеров)
-        closedDoorTimeout: [number][optional],		// таймаут закрытой двери (для дверных контроллеров)
-        buttonTypeId: [number][optional]					// тип кнопки (для дверных контроллеров)
+        soundEnabled: [boolean][optional],		// включена ли звуковая сигнализация на устройстве (для дверных контроллеров)
+        lockTimeout: [number][optional],		// таймаут замка (для дверных контроллеров)
+        openDoorTimeout: [number][optional],	// таймаут открытой двери (для дверных контроллеров)
+        closedDoorTimeout: [number][optional],	// таймаут закрытой двери (для дверных контроллеров)
+        buttonTypeId: [number][optional]		// тип кнопки (для дверных контроллеров)
       },
       access: {
-        zoneId: [number][optional],               // зона, к которой привязано устройство
-        zoneAId: [number][optional],              // зона входа
-        zoneBId: [number][optional],              // зона выхода
-        accessModeAB: [number][optional],         // тип доступа из зоны A в зону B
-        accessModeBA: [number][optional]          // тип доступа из зоны B в зону A
+        zoneId: [number][optional],             // зона, к которой привязано устройство
+        zoneAId: [number][optional],            // зона входа
+        zoneBId: [number][optional],            // зона выхода
+        accessModeAB: [number][optional],       // тип доступа из зоны A в зону B
+        accessModeBA: [number][optional]        // тип доступа из зоны B в зону A
       }
     },
     ...
   ]
 }
-
+==== Это возвращает nodeJS бэкенд
+{
+	"pager":{"totalRows":1},
+	"rows":[
+		{
+			"id":3,
+			"name":"EP2000 REMOTE",
+			"description":"",
+			"enabled":true,
+			"connection":{
+				"typeId":9,
+				"connectionId":1,
+				"protocolId":9
+			},
+			"device":{
+				"dbConnectionId":2,
+				"directionOpenMask":[0,0]
+			},
+			"access":{
+				"zoneAId":1,
+				"zoneBId":2,
+				"accessModeAB":2,
+				"accessModeBA":2
+			}
+		}
+	]
+}
 
 --------------------------------------------------------------------------------
 Добавить/редактировать устройство
@@ -1245,29 +1283,28 @@ GET /personnel/api/departments
 Параметры:
 limit: [number][optional][default=100]
 offset: [number][optional][default=0]
-organizationId: [number]                 // ид организации
-name: [string][optonal]                  // название отдела 
+organizationId: [number]                 	// ид организации
+name: [string][optonal]                  	// название отдела 
 
 Возвращаемое значение:
 {
   pager: {
-    totalRows: [number]                   // всего записей
+    totalRows: [number]                   	// всего записей
   },
   rows: [
     {
-      id: [number],                       // ид отдела
+      id: [number],                       	// ид отдела
+      name: [string],                     	// название отдела
+      description: [string],              	// описание отдела
+      organizationId: [number],           	// ид организации
 	  id1C: [string][optional],
-      name: [string],                     // название отдела
-      description: [string],              // описание отдела
-      organizationId: [number],           // ид организации
 	  organizationId1C: [string][optional],
-      dayScheduleTypeId: [number],        // тип расписания: 1 - наследуется от организации, 2 - собственное
-      blocked: [boolean]									// отдел заблокирован
+      dayScheduleTypeId: [number],        	// тип расписания: 1 - наследуется от организации, 2 - собственное
+      blocked: [boolean]					// отдел заблокирован
     },
     ...
   ]
 }
-
 
 --------------------------------------------------------------------------------
 Добавить/редактировать отдел
@@ -2021,7 +2058,7 @@ GET /zones/api/zones
 Параметры:
 organizationId=[number][optional]       		// список зон, с которыми ассоциирована организация
 departmentId=[number][optional]         		// список зон, с которыми связан отдел
-cardNumber=[number][optional]								// список зон, с которыми связана карта 
+cardNumber=[number][optional]					// список зон, с которыми связана карта 
 limit=[number][default=100]
 offset=[number][default=0]
 
@@ -2032,10 +2069,10 @@ offset=[number][default=0]
   },
   rows: [
     {
-      id: [number],                       	// ид
-      name: [string],                     	// название
-      description: [string],               	// описание
-  		singlePass: [boolean][optional],			// в эту зону возможен только однократный проход
+      	id: [number],                       	// ид
+      	name: [string],                     	// название
+      	description: [string],               	// описание
+  		singlePass: [boolean][optional],		// в эту зону возможен только однократный проход
   		singlePassTimeout: [number][optional]	// таймаут однократного прохода
     },
     ...
@@ -2406,3 +2443,8 @@ GET /integration/bitrix/check
 6144 - Просмотр пользователей
 6145 - Редактирование пользователей
 4294967295 - Все привилегии - полный доступ
+
+==============================================================================Дописать
+1.  /core/api/protocols
+2.  /core/api/connections
+

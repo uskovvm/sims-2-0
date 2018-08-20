@@ -17,9 +17,9 @@ public final class JwtUserFactory {
 	private JwtUserFactory() {
 	}
 
-	public static JwtUser create(User user) {
+	public static SUser create(User user) {
 		// @formatter:off
-		return new JwtUser(
+		return new SUser(
 				user.getId(),
 				user.getUsername(),
 				user.getFirstname(),
@@ -33,12 +33,33 @@ public final class JwtUserFactory {
 		// @formatter:on
 	}
 
-	private static List<GrantedAuthority> mapToGrantedAuthorities(List<Role> authorities) {
-		return authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getName().name()))
-				.collect(Collectors.toList());
+	private static List<Long> mapToGrantedAuthorities(List<Role> authorities) {
+		//return authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getName().name()))
+		//		.collect(Collectors.toList());
+		return authorities.stream().map(authority -> authority.getId()).collect(Collectors.toList());
+
 	}
 
-	private static List<SimpleGrantedAuthority> mapToGrantedPrivileges(List<Role> authorities) {
+	private static List<Long> mapToGrantedPrivileges(List<Role> authorities) {
+		List<Long> privileges = new ArrayList<Long>();
+		for (Role authority : authorities) {
+			Collection<Privilege> result = authority.getPrivileges();
+			for (Privilege privilege : result) {
+				privileges.add(privilege.getId());
+			}
+		}
+		return privileges;
+	}
+
+	private static List<GrantedAuthority> mapToGrantedAuthorities_COPY(List<Role> authorities) {
+		//return authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getName().name()))
+		//		.collect(Collectors.toList());
+		return authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getId().toString()))
+				.collect(Collectors.toList());
+
+	}
+
+	private static List<SimpleGrantedAuthority> mapToGrantedPrivileges_COPY(List<Role> authorities) {
 		List<SimpleGrantedAuthority> privileges = new ArrayList<SimpleGrantedAuthority>();
 		for (Role authority : authorities) {
 			Collection<Privilege> result = authority.getPrivileges();

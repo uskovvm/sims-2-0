@@ -1,16 +1,16 @@
 package com.carddex.sims2.security.service;
 
 import com.carddex.sims2.preferences.ResponseConstants;
-import com.carddex.sims2.security.JwtUser;
+import com.carddex.sims2.security.SUser;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class UserAuthResponse {
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)//если ошибка определения прав доступа, то в ответ не включать
+	private String token; // токен
 	private String status; // статус операции
 	private String description; // описание статуса
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String token; // токен
-	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@JsonInclude(JsonInclude.Include.NON_NULL)//если ошибка определения прав доступа, то в ответ не включать
 	private UserAuthDetails response;
 
 
@@ -19,18 +19,17 @@ public class UserAuthResponse {
 		this.description = description;
 	}
 
-	public UserAuthResponse(String token, JwtUser user) {
+	public UserAuthResponse(String token, SUser user) {
 		this.token = token;
 		if (user != null) {
 			this.status = ResponseConstants.RESPONSE_SUCCESS;
 			this.description = ResponseConstants.RESPONSE_DESCRIPTION_SUCCESS;
-			this.response = new UserAuthDetails(user.getId(), user.getUsername(), user.isEnabled() ? 0 : 1, 1,
-					user.getAuthorities(), user.getPrivileges());
+			this.response = new UserAuthDetails(user.getId(), user.getUsername(), user.isEnabled() ? 0 : 1, null, null,
+					user.getRoles(), user.getPrivileges());
 		}else {
 			this.status = ResponseConstants.RESPONSE_ERROR;
 			this.description = ResponseConstants.RESPONSE_DESCRIPTION_ERROR;
 		}
-
 	}
 
 	public UserAuthDetails getResponse() {
@@ -64,5 +63,4 @@ public class UserAuthResponse {
 	public void setToken(String token) {
 		this.token = token;
 	}
-
 }

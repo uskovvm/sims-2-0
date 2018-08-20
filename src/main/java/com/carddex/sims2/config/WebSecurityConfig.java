@@ -22,108 +22,89 @@ import com.carddex.sims2.security.JwtAuthorizationTokenFilter;
 import com.carddex.sims2.security.service.JwtUserDetailsService;
 
 @Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+	@Autowired
+	private JwtAuthenticationEntryPoint unauthorizedHandler;
 
-    @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
+	@Autowired
+	private JwtUserDetailsService jwtUserDetailsService;
 
-    // Custom JWT based security filter
-    @Autowired
-    JwtAuthorizationTokenFilter authenticationTokenFilter;
+	// Custom JWT based security filter
+	@Autowired
+	JwtAuthorizationTokenFilter authenticationTokenFilter;
 
-    @Value("${jwt.header}")
-    private String tokenHeader;
+	@Value("${jwt.header}")
+	private String tokenHeader;
 
-    @Value("${jwt.route.authentication.path}")
-    private String authenticationPath;
+	@Value("${jwt.route.authentication.path}")
+	private String authenticationPath;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(jwtUserDetailsService)
-            .passwordEncoder(passwordEncoderBean());
-    }
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoderBean());
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoderBean() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoderBean() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-            // we don't need CSRF because our token is invulnerable
-            .csrf().disable()
+	@Override
+	protected void configure(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity
+				// we don't need CSRF because our token is invulnerable
+				.csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+				// don't create session
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+				.antMatchers("core/api/**").permitAll()
+				// Un-secure H2 Database
+				.antMatchers("/h2-console/**/**").permitAll().anyRequest().authenticated();
 
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+		// httpSecurity.addFilterBefore(authenticationTokenFilter,
+		// UsernamePasswordAuthenticationFilter.class);
 
-            // don't create session
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		// disable page caching
+		httpSecurity.headers().frameOptions().sameOrigin() // required to set for H2 else H2 Console will be blank.
+				.cacheControl();
+	}
 
-            .authorizeRequests()
+	// @Override
+	// public void configure(WebSecurity web) throws Exception {
+	// AuthenticationTokenFilter will ignore the below paths
 
-            // Un-secure H2 Database
-            .antMatchers("/h2-console/**/**").permitAll()
+	// web.ignoring().antMatchers("/**/**");
 
-            .antMatchers("/**").permitAll()
-            .anyRequest().authenticated();
+	// }
 
-       //httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+	// @Override
+	public void configure(WebSecurity web) throws Exception {
 
-        // disable page caching
-        httpSecurity
-            .headers()
-            .frameOptions().sameOrigin()  // required to set for H2 else H2 Console will be blank.
-            .cacheControl();
-    }
+		//@formatter:off
+		// AuthenticationTokenFilter will ignore the below paths
+		web
+		.ignoring().antMatchers(HttpMethod.POST, authenticationPath).and()
+		.ignoring().antMatchers(HttpMethod.GET, authenticationPath).and()
+		.ignoring().antMatchers(HttpMethod.GET, "core/api/modules").and()
+		.ignoring().antMatchers(HttpMethod.GET, "core/api/permission/**")
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // AuthenticationTokenFilter will ignore the below paths
-        
-    	//web.ignoring().antMatchers("/**/**");
-            
-    }
-    //@Override
-    public void configure_COPY(WebSecurity web) throws Exception {
-        // AuthenticationTokenFilter will ignore the below paths
-        
-    	web
-            .ignoring()
-            .antMatchers(
-                HttpMethod.POST,
-                authenticationPath
-            )
+		// allow anonymous resource requests
+		.and().ignoring()
+		.antMatchers(HttpMethod.GET, "/", "/*.html", "/**/**/**/**","/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js")
 
-            // allow anonymous resource requests
-            .and()
-            .ignoring()
-            .antMatchers(
-                HttpMethod.GET,
-                "/",
-                "/*.html",
-                "/favicon.ico",
-                "/**/*.html",
-                "/**/*.css",
-                "/**/*.js"
-            )
+		// Un-secure H2 Database (for testing purposes, H2 console shouldn't be
+		// unprotected in production)
+		.and().ignoring().antMatchers("/h2-console/**/**");
+		//@formatter:on
 
-            // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)
-            .and()
-            .ignoring()
-            .antMatchers("/h2-console/**/**");
-            
-    }
+	}
 
 }

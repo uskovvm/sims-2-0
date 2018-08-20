@@ -9,18 +9,20 @@ public class UserAuthDetails {
 	private String username; // имя пользователя
 	private Integer blocked; // аккаунт заблокирован
 	private Integer registerDate; // дата регистрации аккаунта
-	private Collection<? extends GrantedAuthority> roles; // ид ролей пользователя
-	private Collection<? extends GrantedAuthority> permissions; // ид разрешений
+	private String avatar;
+	private Collection<Long> roles; // ид ролей пользователя
+	private Collection<Long> permissions; // ид разрешений
 
 	public UserAuthDetails() {
 	}
 
-	public UserAuthDetails(Long id, String username, int blocked, int registerDate, Collection<? extends GrantedAuthority> roles,
-			Collection<? extends GrantedAuthority> privileges) {
+	public UserAuthDetails(Long id, String username, Integer blocked, Integer registerDate, String avatar, Collection<Long> roles,
+			Collection<Long> privileges) {
 		this.id = id;
 		this.username = username;
 		this.blocked = blocked;
 		this.registerDate = registerDate;
+		this.avatar = avatar;
 		this.roles = roles;
 		this.permissions = privileges;
 	}
@@ -57,19 +59,27 @@ public class UserAuthDetails {
 		this.registerDate = registerDate;
 	}
 
-	public Collection<? extends GrantedAuthority> getRoles() {
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
+	public Collection<Long> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Collection<? extends GrantedAuthority> roles) {
+	public void setRoles(Collection<Long> roles) {
 		this.roles = roles;
 	}
 
-	public Collection<? extends GrantedAuthority> getPermissions() {
+	public Collection<Long> getPermissions() {
 		return permissions;
 	}
 
-	public void setPermissions(Collection<? extends GrantedAuthority> permissions) {
+	public void setPermissions(Collection<Long> permissions) {
 		this.permissions = permissions;
 	}
 }
