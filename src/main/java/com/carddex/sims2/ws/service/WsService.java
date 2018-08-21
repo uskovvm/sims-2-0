@@ -15,17 +15,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.carddex.sims2.model.Nomenclature;
-import com.carddex.sims2.security.repository.NomenclatureRepository;
+import com.carddex.sims2.model.NomenclatureGroup;
+import com.carddex.sims2.model.NomenclatureItem;
+import com.carddex.sims2.security.repository.NomenclatureGroupRepository;
+import com.carddex.sims2.security.repository.NomenclatureItemRepository;
 import com.carddex.sims2.shedule.ScheduledTasks;
 import com.carddex.sims2.ws.CarddexMakePortType;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class WsService {
@@ -41,7 +38,9 @@ public class WsService {
 	private String password;
 
 	@Autowired
-	private NomenclatureRepository nomenclatureRepository;
+	private NomenclatureGroupRepository nomenclatureGroupRepository;
+	@Autowired
+	private NomenclatureItemRepository nomenclatureItemRepository;
 
 	public WsService(String defaultUri, String username, String password) {
 		this.defaultUri = defaultUri;
@@ -66,42 +65,61 @@ public class WsService {
 	}
 
 	public void update() throws MalformedURLException {
-		
-		updateNomenclature();
+
+		updateNomenclatureGroup();
+		updateNomenclatureItems();
 	}
-	
-	public void updateNomenclature() {
-		
+
+	public void updateNomenclatureGroup() {
+
 		String result = port.executeQuery(
 				"ВЫБРАТЬ Н.Код, Н.Наименование ИЗ Справочник.Номенклатура КАК Н ГДЕ Н.ПометкаУдаления = ЛОЖЬ И Н.ЭтоГруппа = ИСТИНА");
-		List<Nomenclature> nomenclatures = mapToNomenclature(result);
+		List<NomenclatureGroup> nomenclatures = mapToNomenclatureGroup(result);
 
-		for (Nomenclature nomenclature : nomenclatures) {
+		for (NomenclatureGroup nomenclature : nomenclatures) {
 			try {
-				Nomenclature nom = nomenclatureRepository.findByCode(nomenclature.getCode());
+				NomenclatureGroup nom = nomenclatureGroupRepository.findByCode(nomenclature.getCode());
 				if (nom == null)
-					nomenclatureRepository.save(nomenclature);
+					nomenclatureGroupRepository.save(nomenclature);
 				else if (!nom.equals(nomenclature)) {
 					nom.setName(nomenclature.getName());
-					nomenclatureRepository.save(nom);
+					nomenclatureGroupRepository.save(nom);
 				}
 			} catch (IncorrectResultSizeDataAccessException | PersistenceException e) {
-				log.error("Ошибка обновения номенклатуры." + System.getProperty("line.separator") + e.getLocalizedMessage() );
+				log.error("Ошибка обновения номенклатуры." + System.getProperty("line.separator")
+						+ e.getLocalizedMessage());
+			}
+		}
+	}
+
+	public void updateNomenclatureItems() {
+
+		String result = port.executeQuery(
+				"ВЫБРАТЬ Н.Код, Н.НаименованиеПолное КАК Наименование, Н.Наименование КАК НаименованиеКраткое, Н.Родитель.Наименование КАК Родитель, Н.Родитель.Код ИЗ Справочник.Номенклатура КАК Н ГДЕ Н.ПометкаУдаления = ЛОЖЬ И Н.ЭтоГруппа = ЛОЖЬ");
+		List<NomenclatureItem> nomenclatures = mapToNomenclatureItem(result);
+
+		for (NomenclatureItem item : nomenclatures) {
+			try {
+				NomenclatureItem nomenclature = nomenclatureItemRepository.findByCode(item.getCode());
+				if (nomenclature == null)
+					nomenclatureItemRepository.save(item);
+				else if (nomenclature.hashCode() != item.hashCode()) {
+					nomenclature.setName(item.getName());
+					nomenclature.setShortName(item.getShortName());
+					nomenclatureItemRepository.save(nomenclature);
+				}
+				if (nomenclature.getGroup().hashCode() != item.getGroup().hashCode()) {
+					nomenclature.setGroup(item.getGroup());
+					nomenclatureItemRepository.save(nomenclature);
+				}
+			} catch (IncorrectResultSizeDataAccessException | PersistenceException e) {
+				log.error("Ошибка обновения номенклатуры." + System.getProperty("line.separator")
+						+ e.getLocalizedMessage());
 			}
 		}
 
-		// System.out.println(port.getList());
-		// System.out.println("1.Выбрать из артикулов================>");
-		// System.out.println("1.1Группы номенклатуры================>");
-		// System.out.println(port.executeQuery("ВЫБРАТЬ Н.Код, Н.Наименование ИЗ
-		// Справочник.Номенклатура КАК Н ГДЕ Н.ПометкаУдаления = ЛОЖЬ И Н.ЭтоГруппа =
-		// ИСТИНА"));
 		/*
-		 * System.out.
-		 * println("1.2Код, Наименование, Краткое наименование, Прочие важные поля если есть================>"
-		 * ); System.out.println(port.
-		 * executeQuery("ВЫБРАТЬ Н.Код, Н.НаименованиеПолное КАК Наименование, Н.Наименование КАК НаименованиеКраткое, Н.Родитель.Наименование КАК Родитель, Н.Родитель.Код ИЗ Справочник.Номенклатура КАК Н ГДЕ Н.ПометкаУдаления = ЛОЖЬ И Н.ЭтоГруппа = ЛОЖЬ"
-		 * )); System.out.println("2.Выбрать из Подразделений================>");
+		 * System.out.println("2.Выбрать из Подразделений================>");
 		 * System.out.
 		 * println("2.1Код, Наименование, Краткое Наименование, Прочие важные поля если есть===============>"
 		 * );
@@ -154,18 +172,18 @@ public class WsService {
 		 * "				ФЛ_КИ.Ссылка) КАК КИ\n" +
 		 * "			ПО КИС.ФизическоеЛицо = КИ.Ссылка"));
 		 */
-		
+
 	}
 
-	private List<Nomenclature> mapToNomenclature(String result) {
+	private List<NomenclatureGroup> mapToNomenclatureGroup(String result) {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
-		module.addDeserializer(Nomenclature.class, new NomenclatureDeserializer());
+		module.addDeserializer(NomenclatureGroup.class, new NomenclatureGroupDeserializer());
 		mapper.registerModule(module);
 
-		List<Nomenclature> nomenclatures;
+		List<NomenclatureGroup> nomenclatures;
 		try {
-			nomenclatures = mapper.readValue(result, new TypeReference<List<Nomenclature>>() {
+			nomenclatures = mapper.readValue(result, new TypeReference<List<NomenclatureGroup>>() {
 			});
 			return nomenclatures;
 		} catch (IOException e) {
@@ -174,5 +192,23 @@ public class WsService {
 		return null;
 	}
 
+	private List<NomenclatureItem> mapToNomenclatureItem(String result) {
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule();
+		NomenclatureItemDeserializer des = new NomenclatureItemDeserializer();
+		des.setNomenclatureGroupRepository(nomenclatureGroupRepository);
+		module.addDeserializer(NomenclatureItem.class, des);
+		mapper.registerModule(module);
+
+		List<NomenclatureItem> nomenclatures;
+		try {
+			nomenclatures = mapper.readValue(result, new TypeReference<List<NomenclatureItem>>() {
+			});
+			return nomenclatures;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }
