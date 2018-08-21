@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.carddex.sims2.security.service.WsService;
+import com.carddex.sims2.ws.service.WsService;
 
 
 @Component
@@ -23,11 +23,11 @@ public class ScheduledTasks {
 	@Autowired
 	private WsService service;
 
-	@Scheduled(fixedRate = 10000)
+	@Scheduled(cron = "${rates.refresh.cron}")
 	public void reportCurrentTime() {
 		log.info("The time is now {}", dateFormat.format(new Date()));
 		try {
-			service.getWS();
+			service.update();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}

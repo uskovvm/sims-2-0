@@ -6,9 +6,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class JwtDemoApplication {
+public class SIMS2Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(JwtDemoApplication.class, args);
+        SpringApplication.run(SIMS2Application.class, args);
     }
 }

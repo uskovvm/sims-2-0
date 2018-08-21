@@ -1,5 +1,5 @@
 
-package com.carddex.ws;
+package com.carddex.sims2.ws;
 
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -1,5 +1,5 @@
 
-package com.carddex.ws;
+package com.carddex.sims2.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="Data" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "_return"
+    "data"
 })
-@XmlRootElement(name = "TestResponse")
-public class TestResponse {
+@XmlRootElement(name = "Test")
+public class Test {
 
-    @XmlElement(name = "return", required = true)
-    protected String _return;
+    @XmlElement(name = "Data", required = true)
+    protected String data;
 
     /**
-     * Gets the value of the return property.
+     * Gets the value of the data property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getReturn() {
-        return _return;
+    public String getData() {
+        return data;
     }
 
     /**
-     * Sets the value of the return property.
+     * Sets the value of the data property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setReturn(String value) {
-        this._return = value;
+    public void setData(String value) {
+        this.data = value;
     }
 
 }
