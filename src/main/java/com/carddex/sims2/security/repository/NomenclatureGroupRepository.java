@@ -9,4 +9,7 @@ public interface NomenclatureGroupRepository extends JpaRepository<NomenclatureG
 
 	@Query("select n from NomenclatureGroup n where n.code = :code")
 	NomenclatureGroup findByCode(String code);
+	
+	@Query("select n from NomenclatureGroup n where n.items = :item")
+	NomenclatureGroup findByItem(NomenclatureItem item);
 }

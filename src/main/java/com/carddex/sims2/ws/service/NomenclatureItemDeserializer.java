@@ -14,9 +14,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public class NomenclatureItemDeserializer extends StdDeserializer<NomenclatureItem> {
-	
-	private NomenclatureGroupRepository nomenclatureGroupRepository;
 
+	private NomenclatureGroupRepository nomenclatureGroupRepository;
 
 	public NomenclatureItemDeserializer() {
 		this(null);
@@ -36,6 +35,13 @@ public class NomenclatureItemDeserializer extends StdDeserializer<NomenclatureIt
 		String parentName = node.get("Родитель").asText();
 		String parentCode = node.get("РодительКод").asText();
 		
+		if (parentName.length() == 0 || parentCode.length() == 0) {
+			System.out.println("code = " + code);
+			System.out.println("name = " + name);
+			System.out.println("parent name = " + parentName);
+			System.out.println("parent code = " + parentCode);
+		}
+
 		NomenclatureGroup group = nomenclatureGroupRepository.findByCode(parentCode);
 
 		return new NomenclatureItem(code, name, shortName, parentName, parentCode, group);

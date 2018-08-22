@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "NOMENCLATURE_ITEMS")
-public class NomenclatureItem implements Serializable {
+public class NomenclatureItemCopy implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -26,25 +26,19 @@ public class NomenclatureItem implements Serializable {
 	private String name;
 	@Column(name = "SHORT_NAME", length = 100)
 	private String shortName;
-	@Column(name = "PARENT_NAME", length = 100)
-	private String parentName;
-	@Column(name = "PARENT_CODE", length = 100)
-	private String parentCode;
 
 	@ManyToOne
 	@JoinColumn(name = "group_id", nullable = true)
 	private NomenclatureGroup group;
 
 	//
-	public NomenclatureItem() {
+	public NomenclatureItemCopy() {
 	}
 
-	public NomenclatureItem(String code, String name, String shortName, String parentName, String parentCode, NomenclatureGroup group) {
+	public NomenclatureItemCopy(String code, String name, String shortName, String parentName, String parentCode, NomenclatureGroup group) {
 		this.code = code;
 		this.name = name;
 		this.shortName = shortName;
-		this.parentName = parentName;
-		this.parentCode = parentCode;
 		this.group = group;
 
 	}
@@ -81,22 +75,6 @@ public class NomenclatureItem implements Serializable {
 		this.shortName = shortName;
 	}
 
-	public String getParentName() {
-		return parentName;
-	}
-
-	public void setParentName(String parentName) {
-		this.parentName = parentName;
-	}
-
-	public String getParentCode() {
-		return parentCode;
-	}
-
-	public void setParentCode(String parentCode) {
-		this.parentCode = parentCode;
-	}
-
 	public NomenclatureGroup getGroup() {
 		return group;
 	}
@@ -123,7 +101,7 @@ public class NomenclatureItem implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		NomenclatureItem other = (NomenclatureItem) obj;
+		NomenclatureItemCopy other = (NomenclatureItemCopy) obj;
 		if (code == null) {
 			if (other.code != null)
 				return false;

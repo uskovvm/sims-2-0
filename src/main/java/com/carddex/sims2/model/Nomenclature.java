@@ -7,13 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "NOMENCLATURE_ITEMS")
-public class NomenclatureItem implements Serializable {
+@Table(name = "NOMENCLATURE")
+public class Nomenclature implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -30,22 +28,21 @@ public class NomenclatureItem implements Serializable {
 	private String parentName;
 	@Column(name = "PARENT_CODE", length = 100)
 	private String parentCode;
+	@Column(name = "IS_GROUP")
+	private Boolean isGroup;
 
-	@ManyToOne
-	@JoinColumn(name = "group_id", nullable = true)
-	private NomenclatureGroup group;
 
 	//
-	public NomenclatureItem() {
+	public Nomenclature() {
 	}
 
-	public NomenclatureItem(String code, String name, String shortName, String parentName, String parentCode, NomenclatureGroup group) {
+	public Nomenclature(String code, String name, String shortName, String parentName, String parentCode, Boolean isGroup) {
 		this.code = code;
 		this.name = name;
 		this.shortName = shortName;
 		this.parentName = parentName;
 		this.parentCode = parentCode;
-		this.group = group;
+		this.isGroup = isGroup;
 
 	}
 
@@ -97,12 +94,12 @@ public class NomenclatureItem implements Serializable {
 		this.parentCode = parentCode;
 	}
 
-	public NomenclatureGroup getGroup() {
-		return group;
+	public Boolean getIsGroup() {
+		return isGroup;
 	}
 
-	public void setGroup(NomenclatureGroup group) {
-		this.group = group;
+	public void setIsGroup(Boolean isGroup) {
+		this.isGroup = isGroup;
 	}
 
 	@Override
@@ -111,6 +108,8 @@ public class NomenclatureItem implements Serializable {
 		int result = 1;
 		result = prime * result + ((code == null) ? 0 : code.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((parentCode == null) ? 0 : parentCode.hashCode());
+		result = prime * result + ((parentName == null) ? 0 : parentName.hashCode());
 		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
 		return result;
 	}
@@ -123,7 +122,7 @@ public class NomenclatureItem implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		NomenclatureItem other = (NomenclatureItem) obj;
+		Nomenclature other = (Nomenclature) obj;
 		if (code == null) {
 			if (other.code != null)
 				return false;
@@ -134,6 +133,16 @@ public class NomenclatureItem implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (parentCode == null) {
+			if (other.parentCode != null)
+				return false;
+		} else if (!parentCode.equals(other.parentCode))
+			return false;
+		if (parentName == null) {
+			if (other.parentName != null)
+				return false;
+		} else if (!parentName.equals(other.parentName))
+			return false;
 		if (shortName == null) {
 			if (other.shortName != null)
 				return false;
@@ -141,5 +150,6 @@ public class NomenclatureItem implements Serializable {
 			return false;
 		return true;
 	}
+
 
 }
