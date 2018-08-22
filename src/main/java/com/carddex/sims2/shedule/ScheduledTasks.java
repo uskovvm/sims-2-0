@@ -1,6 +1,5 @@
 package com.carddex.sims2.shedule;
 
-import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,11 +24,8 @@ public class ScheduledTasks {
 
 	@Scheduled(cron = "${rates.refresh.cron}")
 	public void reportCurrentTime() {
-		log.info("The time is now {}", dateFormat.format(new Date()));
-		try {
-			service.update();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		log.info("Обновление номенклатуры - старт {}", dateFormat.format(new Date()));
+		service.updateNomenclature();
+		log.info("Обновление номенклатуры - стоп {}", dateFormat.format(new Date()));
 	}
 }

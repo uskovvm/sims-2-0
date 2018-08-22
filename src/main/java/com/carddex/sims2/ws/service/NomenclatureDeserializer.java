@@ -3,8 +3,6 @@ package com.carddex.sims2.ws.service;
 import java.io.IOException;
 
 import com.carddex.sims2.model.Nomenclature;
-import com.carddex.sims2.model.NomenclatureGroup;
-import com.carddex.sims2.security.repository.NomenclatureGroupRepository;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
