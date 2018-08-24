@@ -1,4 +1,4 @@
-package com.carddex.sims2.ws.nomenclature.service;
+package com.carddex.sims2.ws.service;
 
 import java.io.IOException;
 

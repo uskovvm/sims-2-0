@@ -21,16 +21,22 @@ public class ScheduledTasks {
 	@Autowired
 	@Qualifier("departmentSynchronizationService")
 	private SinchronizationService departmentSynchronizationService;
+	@Autowired
+	@Qualifier("staffSynchronizationService")
+	private SinchronizationService staffSynchronizationService;
 
 	
 	@Scheduled(cron = "${nomenclature.synch.shedule}")
-	public void reportCurrentTime() {
-		
-		log.info("Обновление номенклатуры - СТАРТ.");
+	public void nomenclatureTask() {
 		
 		//nomenclatureSynchronizationService.update();
-		departmentSynchronizationService.update();
-		
-		log.info("Обновление номенклатуры - СТОП.");
 	}
+
+	@Scheduled(cron = "${structure.synch.shedule}")
+	public void departmentTask() {
+
+		//departmentSynchronizationService.update();
+		staffSynchronizationService.update();
+	}
+
 }

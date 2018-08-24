@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,8 +24,11 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "NAME", length = 50)
+    @Column(name = "NAME", length = 150)
     private String name;
+
+    @Column(name = "ID1C")
+    private String code1C;
 
     @Column(name = "boss", length = 50)
     private String chief;
@@ -38,21 +42,18 @@ public class Department {
     @Column(name = "BLOCKED")
     private Boolean blocked;
 
-    @Column(name = "ID1C")
-    private String code1C;
-	
     @Column(name = "ORGANIZATIONID1C")
     private Integer organizationId1C;
     
     @ManyToMany(mappedBy = "departments")
     private Collection<Organization> organizations;
     
-    @OneToMany(mappedBy="department")
-    private Set<Department> items;
+    @OneToMany(mappedBy="parent")
+    private Set<Department> departments;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="parent_id", nullable=true)
-    private Department department;
+    private Department parent;
     
 
 
@@ -137,60 +138,35 @@ public class Department {
 		this.organizations = organizations;
 	}
 
-	public Set<Department> getItems() {
-		return items;
+	public Set<Department> getDepartments() {
+		return departments;
 	}
 
-	public void setItems(Set<Department> items) {
-		this.items = items;
+	public void setDepartments(Set<Department> items) {
+		this.departments = items;
 	}
 
-	public Department getDepartment() {
-		return department;
+	public Department getParent() {
+		return parent;
 	}
 
-	public void setDepartment(Department department) {
-		this.department = department;
+	public void setParent(Department department) {
+		this.parent = department;
 	}
 
-	@Override
-	public int hashCode() {
+	public int hash() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((chief == null) ? 0 : chief.hashCode());
-		result = prime * result + ((code1C == null) ? 0 : code1C.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((code1C == null) ? 0 : code1C.hashCode());
+		result = prime * result + ((chief == null) ? 0 : chief.hashCode());
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Department other = (Department) obj;
-		if (chief == null) {
-			if (other.chief != null)
-				return false;
-		} else if (!chief.equals(other.chief))
-			return false;
-		if (code1C == null) {
-			if (other.code1C != null)
-				return false;
-		} else if (!code1C.equals(other.code1C))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
 	}
 
 	//
 	
-    
+    @Override
+    public String toString() {
+    	return "id= " +id + "; код= " + code1C + "; название= " + name + "; начальник= " + chief;
+    }
 }

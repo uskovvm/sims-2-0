@@ -58,4 +58,19 @@ public class DepartmentDto {
 		this.parentCode = parentCode;
 	}
 	
+	public int hash() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		result = prime * result + ((chief == null) ? 0 : chief.hashCode());
+		return result;
+	}
+
+	@Override
+    public String toString() {
+    	return "код= " + code + "; название= " + name + "; начальник= " + chief;
+    }
+
+
 }

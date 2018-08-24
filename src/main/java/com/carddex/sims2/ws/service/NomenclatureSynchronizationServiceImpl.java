@@ -1,4 +1,4 @@
-package com.carddex.sims2.ws.nomenclature.service;
+package com.carddex.sims2.ws.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,8 +14,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.carddex.sims2.model.Nomenclature;
 import com.carddex.sims2.security.repository.NomenclatureRepository;
-import com.carddex.sims2.ws.service.SinchronizationService;
-import com.carddex.sims2.ws.service.SynchronizationServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -38,24 +36,30 @@ public class NomenclatureSynchronizationServiceImpl extends SynchronizationServi
 
 	//
 	public void update() {
+		
+		log.info("Обновление номенклатуры - СТАРТ.");
+		String result = port.executeQuery("ВЫБРАТЬ ШР.Должность.Наименование КАК Наименование, ШР.Подразделение.Код КАК Код_связанного_Подразделения,"
+				+ " ШР.Подразделение.Наименование КАК Наименование_связанного_Подразделения ИЗ Справочник.ШтатноеРасписание КАК ШР ГДЕ ШР.Утверждена = ИСТИНА"
+				+ " И ШР.Закрыта = ЛОЖЬ И ШР.ПометкаУдаления = ЛОЖЬ");
+		System.out.println(result);
 		List<Nomenclature> list = nomenclatureRepository.findAll();
-
-		String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
+		//String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
 		// result =
 		// readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//
 		// Отладка
 		List<Nomenclature> groups = mapToNomenclature(result, true);
 		matchNomenclature(groups, true, list);
-
 		result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_ITEMS);
 		// result =
 		// readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//
 		// Отладка
 		List<Nomenclature> items = mapToNomenclature(result, false);
 		matchNomenclature(items, false, list);
-
 		nomenclatureRepository.deleteAll(list);
 		list.stream().forEach(i -> log.info("---->  Запись будет удалена. Код = " + i.getCode()));
+		
+		log.info("Обновление номенклатуры - СТОП.");
+
 	}
 
 	private String readJson(String path) {
