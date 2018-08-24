@@ -1,4 +1,4 @@
-package com.carddex.sims2.ws.service;
+package com.carddex.sims2.ws.department.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +16,8 @@ import com.carddex.sims2.model.Department;
 import com.carddex.sims2.model.Nomenclature;
 import com.carddex.sims2.security.repository.DepartmentRepository;
 import com.carddex.sims2.security.repository.NomenclatureRepository;
+import com.carddex.sims2.ws.service.SinchronizationService;
+import com.carddex.sims2.ws.service.SynchronizationServiceImpl;
 import com.carddex.sims2.ws.service.model.DepartmentDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

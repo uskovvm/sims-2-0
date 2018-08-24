@@ -4,8 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.carddex.sims2.ws.service.DepartmentSynchronizationServiceImpl;
-import com.carddex.sims2.ws.service.NomenclatureSynchronizationServiceImpl;
+import com.carddex.sims2.ws.department.service.DepartmentSynchronizationServiceImpl;
+import com.carddex.sims2.ws.nomenclature.service.NomenclatureSynchronizationServiceImpl;
 import com.carddex.sims2.ws.service.SynchronizationServiceImpl;
 
 

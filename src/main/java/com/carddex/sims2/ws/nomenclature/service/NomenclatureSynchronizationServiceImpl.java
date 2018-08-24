@@ -1,4 +1,4 @@
-package com.carddex.sims2.ws.service;
+package com.carddex.sims2.ws.nomenclature.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +14,8 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.carddex.sims2.model.Nomenclature;
 import com.carddex.sims2.security.repository.NomenclatureRepository;
+import com.carddex.sims2.ws.service.SinchronizationService;
+import com.carddex.sims2.ws.service.SynchronizationServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
