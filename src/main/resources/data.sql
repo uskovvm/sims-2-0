@@ -71,8 +71,8 @@ INSERT INTO MODULES (ID, NAME, DESCRIPTION, ENABLED) VALUES (6,	'Конфигу�
 INSERT INTO ORGANIZATION (ID, NAME, FULLNAME, DESCRIPTION, ID1C, BLOCKED) VALUES (1, 'скрытая', null, null, null, null);
 INSERT INTO ORGANIZATION (ID, NAME, FULLNAME, DESCRIPTION, ID1C, BLOCKED) VALUES (2, 'Главная', null, null, null, null);
 
-INSERT INTO DEPARTMENT (ID, NAME, DESCRIPTION, DAYSHEDULETYPEID, ID1C, ORGANIZATIONID1C, BLOCKED) VALUES (1, 'скрытый', null, null, null, null, null);
-INSERT INTO DEPARTMENT (ID, NAME, DESCRIPTION, DAYSHEDULETYPEID, ID1C, ORGANIZATIONID1C, BLOCKED) VALUES (2, 'Общий отдел', 'Отдел для новых учетных записей и посетителей', null, null, null, null);
+--INSERT INTO DEPARTMENT (ID, NAME, DESCRIPTION, DAYSHEDULETYPEID, ID1C, ORGANIZATIONID1C, BLOCKED, PARENT_ID) VALUES (1, 'скрытый', null, null, null, null, null,null);
+--INSERT INTO DEPARTMENT (ID, NAME, DESCRIPTION, DAYSHEDULETYPEID, ID1C, ORGANIZATIONID1C, BLOCKED, PARENT_ID) VALUES (2, 'Общий отдел', 'Отдел для новых учетных записей и посетителей', null, null, null, null,1);
 
 INSERT INTO ORGANIZATION_DEPARTMENTS (ORGANIZATION_ID, DEPARTMENT_ID) VALUES (2,	2);
 

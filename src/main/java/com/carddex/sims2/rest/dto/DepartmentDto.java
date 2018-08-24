@@ -15,12 +15,12 @@ public class DepartmentDto {
     
     private Long organizationId;
 
-    private Integer id1C;
+    private String id1C;
 	
     private Integer organizationId1C;
     
 
-	public DepartmentDto(Long id, String name, String description, Long organizationId, Integer id1C,
+	public DepartmentDto(Long id, String name, String description, Long organizationId, String id1C,
 			Integer organizationId1C, Integer dayScheduleTypeId, Boolean blocked) {
 
 		this.id=id;
@@ -83,11 +83,11 @@ public class DepartmentDto {
 		this.organizationId = organizationId;
 	}
 
-	public Integer getId1C() {
+	public String getId1C() {
 		return id1C;
 	}
 
-	public void setId1C(Integer id1c) {
+	public void setId1C(String id1c) {
 		id1C = id1c;
 	}
 

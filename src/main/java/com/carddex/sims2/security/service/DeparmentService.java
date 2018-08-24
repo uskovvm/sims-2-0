@@ -34,7 +34,7 @@ public class DeparmentService {
 			}
 			if (orgId != null)//скрытый - не добавляем
 				result.add(new DepartmentDto(department.getId(), department.getName(), department.getDescription(),
-						orgId, department.getId1C(), department.getOrganizationId1C(),
+						orgId, department.getCode1C(), department.getOrganizationId1C(),
 						department.getDayScheduleTypeId(), department.getBlocked()));
 		}
 		return result;

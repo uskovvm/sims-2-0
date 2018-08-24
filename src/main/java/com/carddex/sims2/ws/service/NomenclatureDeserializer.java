@@ -26,6 +26,7 @@ public class NomenclatureDeserializer extends StdDeserializer<Nomenclature> {
 			throws IOException, JsonProcessingException {
 		JsonNode node = jp.getCodec().readTree(jp);
 		String code = node.get("Код").asText();
+		//System.out.println(code);
 		String name = node.get("Наименование").asText();
 		String shortName = "";
 		String parentName = "";

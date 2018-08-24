@@ -28,7 +28,7 @@ public class Account implements Serializable {
 	@Column(name = "DAY_SHEDULE_TYPE_ID")
 	private int dayScheduleTypeId;
 
-	@Column(name = "\"deleted\"")
+	@Column(name = "DELETED")
 	private int deleted;
 
 	@Column(name = "DEPARTMENT_ID_1C")

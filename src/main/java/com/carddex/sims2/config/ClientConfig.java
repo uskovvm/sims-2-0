@@ -4,7 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.carddex.sims2.ws.service.WsService;
+import com.carddex.sims2.ws.service.DepartmentSynchronizationServiceImpl;
+import com.carddex.sims2.ws.service.NomenclatureSynchronizationServiceImpl;
+import com.carddex.sims2.ws.service.SynchronizationServiceImpl;
 
 
 @Configuration
@@ -14,14 +16,24 @@ public class ClientConfig {
 	@Value("${ws.default-uri}")
 	private String defaultUri;
 	@Value("${ws.username}")
-	String username;
+	private String username;
 	@Value("${ws.password}")
-	String password;
+	private String password;
 
 
-	@Bean
-	public WsService webService() {
-		return new WsService(defaultUri,username, password);
+	//@Bean(name="nomenclatureSynchronizationService")
+	@Bean(name="synchronizationService")
+	public SynchronizationServiceImpl synchronizationService() {
+		return new SynchronizationServiceImpl(defaultUri,username, password);
 	}
 
+	@Bean(name="nomenclatureSynchronizationService")
+	public NomenclatureSynchronizationServiceImpl nomenclatureSynchronizationService() {
+		return new NomenclatureSynchronizationServiceImpl(defaultUri,username, password);
+	}
+
+	@Bean(name="departmentSynchronizationService")
+	public DepartmentSynchronizationServiceImpl departmentSynchronizationService() {
+		return new DepartmentSynchronizationServiceImpl(defaultUri,username, password);
+	}
 }
