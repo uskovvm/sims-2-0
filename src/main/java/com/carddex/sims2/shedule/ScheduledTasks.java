@@ -32,14 +32,14 @@ public class ScheduledTasks {
 	@Scheduled(cron = "${nomenclature.synch.shedule}")
 	public void nomenclatureTask() {
 		
-		//nomenclatureSynchronizationService.update();
+		nomenclatureSynchronizationService.update();
 	}
 
 	@Scheduled(cron = "${structure.synch.shedule}")
 	public void departmentTask() {
 
-		departmentSynchronizationService.update();
+		//departmentSynchronizationService.update();
 		//staffSynchronizationService.update();
-		employeeSynchronizationService.update();
+		//employeeSynchronizationService.update();
 	}
 }

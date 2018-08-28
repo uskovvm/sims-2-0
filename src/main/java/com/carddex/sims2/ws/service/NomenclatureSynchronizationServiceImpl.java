@@ -1,8 +1,6 @@
 package com.carddex.sims2.ws.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
@@ -14,6 +12,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.carddex.sims2.model.Nomenclature;
 import com.carddex.sims2.security.repository.NomenclatureRepository;
+import com.carddex.sims2.ws.service.model.NomenclatureDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -39,75 +38,79 @@ public class NomenclatureSynchronizationServiceImpl extends SynchronizationServi
 
 		log.info("Обновление номенклатуры - СТАРТ.");
 		List<Nomenclature> list = nomenclatureRepository.findAll();
-		String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
-		// result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//Отладка
-		List<Nomenclature> groups = mapToNomenclature(result, true);
-		synchronize(groups, true, list);
-		result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_ITEMS);
-		// result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//Отладка
-		List<Nomenclature> items = mapToNomenclature(result, false);
-		synchronize(items, false, list);
+		//String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
+		String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//Отладка
+		List<NomenclatureDto> groups = mapToNomenclature(result, true);
+		//result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_ITEMS);
+		result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//Отладка
+		List<NomenclatureDto> items = mapToNomenclature(result, false);
+		items.addAll(groups);
+		
+		synchronize(items, list);
 		nomenclatureRepository.deleteAll(list);
-		list.stream().forEach(i -> log.info("---->  Запись будет удалена. Код = " + i.getCode()));
+		list.stream().forEach(i -> log.info("---->  Запись будет удалена. " + i.toString()));
 
 		log.info("Обновление номенклатуры - СТОП.");
-
 	}
 
-	private String readJson(String path) {
+	private void synchronize(List<NomenclatureDto> items, List<Nomenclature> list)
+			throws IncorrectResultSizeDataAccessException, PersistenceException {
+		/*
+		 * Всего 2 прохода. В первом проходе добавляем/модифицируем Во 2-м проходе
+		 * устанавливаем зависимости parent/chaild
+		 */
+		// 1-й проход.
+		for (NomenclatureDto item : items) {
 
-		byte[] encoded;
-		try {
-			encoded = Files.readAllBytes(Paths.get(path));
-			return new String(encoded);
-		} catch (IOException e) {
-			e.printStackTrace();
+			Nomenclature nomenclature = nomenclatureRepository.findByCode(item.getCode());
+			if (nomenclature == null) {
+				nomenclature = nomenclatureRepository.save(new Nomenclature(item.getCode(), item.getName(), item.getShortName()));
+				log.info("---->  Добавена запись. " + item.toString());
+			} else if (nomenclature.hash() != item.hashCode()) {
+				nomenclature.setName(item.getName());
+				nomenclature.setShortName(item.getShortName());
+				Nomenclature modifedItem = nomenclatureRepository.save(nomenclature);
+				log.info("----> Изменена запись. " + modifedItem.toString());
+			}
+			list.removeIf(n -> {
+				return n.getCode().equals(item.getCode());
+			});
 		}
-		return null;
-	}
-
-	private void synchronize(List<Nomenclature> items, boolean isGroup, List<Nomenclature> list) {
-		for (Nomenclature item : items) {
-			try {
-				Nomenclature nomenclature = nomenclatureRepository.findByCode(item.getCode());
-				if (nomenclature == null) {
-					nomenclatureRepository.save(item);
-					log.info("---->  Добавена запись. Код = " + item.getCode());
-				} else if (nomenclature.hashCode() != item.hashCode()) {
-					nomenclature.setName(item.getName());
-					if (isGroup) {
-						nomenclature.setShortName("");
-						nomenclature.setParentName("");
-						nomenclature.setParentCode("");
-					} else {
-						nomenclature.setShortName(item.getShortName());
-						nomenclature.setParentName(item.getParentName());
-						nomenclature.setParentCode(item.getParentCode());
+		// 2-й проход
+		for (NomenclatureDto item : items) {
+			Nomenclature nomenclature = nomenclatureRepository.findByCode(item.getCode());
+			if (nomenclature != null) {
+				Nomenclature group = nomenclatureRepository.findByCode(item.getParentCode());
+				if (group != null) {
+					// проверяем, сменился ли родитель.
+					if (nomenclature.getGroup() == null && item.getParentCode().length() > 0) {
+						nomenclature.setGroup(group);
+						nomenclature = nomenclatureRepository.save(nomenclature);
+						log.info("----> Изменена запись. " + nomenclature.toString());
+					} else if (nomenclature.getGroup() != null && nomenclature.getGroup().hash() != group.hash()) {
+						nomenclature.setGroup(group);
+						nomenclature = nomenclatureRepository.save(nomenclature);
+						log.info("----> Изменена запись. " + nomenclature.toString());
 					}
-					Nomenclature modifedItem = nomenclatureRepository.save(nomenclature);
-					log.info("----> Изменена запись. Код = " + modifedItem.getCode());
 				}
-				list.removeIf(n -> {
-					return n.getCode().equals(item.getCode());
-				});
-			} catch (IncorrectResultSizeDataAccessException | PersistenceException e) {
-				log.error("Ошибка обновения номенклатуры." + System.getProperty("line.separator")
-						+ e.getLocalizedMessage());
 			}
 		}
 	}
 
-	private List<Nomenclature> mapToNomenclature(String result, Boolean isGroup) {
+	
+	private List<NomenclatureDto> mapToNomenclature(String result, Boolean isGroup) {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
+		
 		NomenclatureDeserializer des = new NomenclatureDeserializer();
 		des.setIsGroup(isGroup);
-		module.addDeserializer(Nomenclature.class, des);
+		
+		module.addDeserializer(NomenclatureDto.class, des);
 		mapper.registerModule(module);
 
-		List<Nomenclature> nomenclatures;
+		List<NomenclatureDto> nomenclatures;
 		try {
-			nomenclatures = mapper.readValue(result, new TypeReference<List<Nomenclature>>() {
+			nomenclatures = mapper.readValue(result, new TypeReference<List<NomenclatureDto>>() {
 			});
 			return nomenclatures;
 		} catch (IOException e) {

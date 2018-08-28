@@ -9,8 +9,4 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     
 	@Query("select s from Staff s where s.name = :name")
 	Staff findByName(String name);
-
-	@Query("select s from Staff s where s.code = :code")
-	Staff findByCode(String code);
-
 }

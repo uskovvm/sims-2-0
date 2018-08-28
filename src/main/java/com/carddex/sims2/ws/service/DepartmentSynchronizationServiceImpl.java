@@ -1,14 +1,11 @@
 package com.carddex.sims2.ws.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
 
 import org.hibernate.JDBCException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +46,7 @@ public class DepartmentSynchronizationServiceImpl extends SynchronizationService
 		List<DepartmentDto> dtoList;
 		try {
 			dtoList = mapToDepartment(result, true);
-			synchronize(dtoList, true, list);
+			synchronize(dtoList, list);
 			list.stream().forEach(i -> log.info("----> Запись будет удалена. Код = " + i.toString()));
 			departmentRepository.deleteAll(list);
 		} catch (IOException ioex) {
@@ -64,19 +61,7 @@ public class DepartmentSynchronizationServiceImpl extends SynchronizationService
 
 	}
 
-	private String readJson(String path) {
-
-		byte[] encoded;
-		try {
-			encoded = Files.readAllBytes(Paths.get(path));
-			return new String(encoded);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private void synchronize(List<DepartmentDto> items, boolean isGroup, List<Department> list)
+	private void synchronize(List<DepartmentDto> items, List<Department> list)
 			throws IncorrectResultSizeDataAccessException, PersistenceException {
 		/*
 		 * Всего 2 прохода. В первом проходе добавляем/модифицируем Во 2-м проходе

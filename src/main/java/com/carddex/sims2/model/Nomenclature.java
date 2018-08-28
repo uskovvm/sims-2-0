@@ -1,12 +1,17 @@
 package com.carddex.sims2.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,26 +29,37 @@ public class Nomenclature implements Serializable {
 	private String name;
 	@Column(name = "SHORT_NAME", length = 100)
 	private String shortName;
-	@Column(name = "PARENT_NAME", length = 100)
-	private String parentName;
-	@Column(name = "PARENT_CODE", length = 100)
-	private String parentCode;
-	@Column(name = "IS_GROUP")
-	private Boolean isGroup;
 
+    @OneToMany(mappedBy="group")
+    private Set<Nomenclature> nomenclatures;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "group_id", nullable = true)
+	private Nomenclature group;
 
 	//
 	public Nomenclature() {
 	}
 
-	public Nomenclature(String code, String name, String shortName, String parentName, String parentCode, Boolean isGroup) {
+	public Nomenclature(String code, String name, String shortName, String parentName, String parentCode,
+			Boolean isGroup) {
 		this.code = code;
 		this.name = name;
 		this.shortName = shortName;
-		this.parentName = parentName;
-		this.parentCode = parentCode;
-		this.isGroup = isGroup;
 
+	}
+
+	public Nomenclature(String code, String name, String shortName, Nomenclature group) {
+		this.code = code;
+		this.name = name;
+		this.shortName = shortName;
+		this.group = group;
+	}
+
+	public Nomenclature(String code, String name, String shortName) {
+		this.code = code;
+		this.name = name;
+		this.shortName = shortName;
 	}
 
 	public Integer getId() {
@@ -78,28 +94,21 @@ public class Nomenclature implements Serializable {
 		this.shortName = shortName;
 	}
 
-	public String getParentName() {
-		return parentName;
+	public Nomenclature getGroup() {
+		return group;
 	}
 
-	public void setParentName(String parentName) {
-		this.parentName = parentName;
+	public void setGroup(Nomenclature group) {
+		this.group = group;
 	}
 
-	public String getParentCode() {
-		return parentCode;
-	}
-
-	public void setParentCode(String parentCode) {
-		this.parentCode = parentCode;
-	}
-
-	public Boolean getIsGroup() {
-		return isGroup;
-	}
-
-	public void setIsGroup(Boolean isGroup) {
-		this.isGroup = isGroup;
+	public int hash() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
+		return result;
 	}
 
 	@Override
@@ -108,9 +117,8 @@ public class Nomenclature implements Serializable {
 		int result = 1;
 		result = prime * result + ((code == null) ? 0 : code.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((parentCode == null) ? 0 : parentCode.hashCode());
-		result = prime * result + ((parentName == null) ? 0 : parentName.hashCode());
 		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
+		result = prime * result + ((group == null) ? 0 : group.getCode().hashCode());
 		return result;
 	}
 
@@ -133,16 +141,6 @@ public class Nomenclature implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (parentCode == null) {
-			if (other.parentCode != null)
-				return false;
-		} else if (!parentCode.equals(other.parentCode))
-			return false;
-		if (parentName == null) {
-			if (other.parentName != null)
-				return false;
-		} else if (!parentName.equals(other.parentName))
-			return false;
 		if (shortName == null) {
 			if (other.shortName != null)
 				return false;
@@ -151,5 +149,9 @@ public class Nomenclature implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "id= " + id + "; code= " + code + "; name= " + name;
+	}
 
 }

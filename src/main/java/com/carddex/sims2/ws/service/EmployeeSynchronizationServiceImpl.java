@@ -61,18 +61,6 @@ public class EmployeeSynchronizationServiceImpl extends SynchronizationServiceIm
 		log.info("Обновление информации о сотрудниках - СТОП.");
 	}
 
-	private String readJson(String path) {
-
-		byte[] encoded;
-		try {
-			encoded = Files.readAllBytes(Paths.get(path));
-			return new String(encoded);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	private List<EmployeeDto> mapToEmployee(String result) {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
