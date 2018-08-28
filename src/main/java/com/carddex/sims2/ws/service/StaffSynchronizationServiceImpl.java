@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
@@ -47,10 +48,10 @@ public class StaffSynchronizationServiceImpl extends SynchronizationServiceImpl 
 		//String result = port.executeQuery(RETRIVE_STAFF_LIST);
 		String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\staff_list.json");// Отладка
 		
-		List<Staff> dtoList;
+		Set<Staff> dtoList;
 		try {
-			dtoList = mapToStaff(result, true);
-			matchStaff(dtoList, true, list);
+			dtoList = mapToStaff(result);
+			synchronize(dtoList, list);
 			list.stream().forEach(i -> log.info("----> Запись будет удалена. Код = " + i.toString()));
 			staffRepository.deleteAll(list);
 		} catch (IOException ioex) {
@@ -77,7 +78,7 @@ public class StaffSynchronizationServiceImpl extends SynchronizationServiceImpl 
 		return null;
 	}
 
-	private void matchStaff(List<Staff> items, boolean isGroup, List<Staff> list)
+	private void synchronize(Set<Staff> items, List<Staff> list)
 			throws IncorrectResultSizeDataAccessException, PersistenceException {
 		for (Staff item : items) {
 			try {
@@ -85,13 +86,13 @@ public class StaffSynchronizationServiceImpl extends SynchronizationServiceImpl 
 				if (staff == null) {
 					staffRepository.save(item);
 					log.info("---->  Добавена запись. " + item.toString());
-				} else if (staff.hash() != item.hash()) {
+				} else if (staff.hashCode() != item.hashCode()) {
 					staff.setName(item.getName());
 					Staff saved = staffRepository.save(staff);
 					log.info("----> Изменена запись. Код = " + saved.toString());
 				}
 				list.removeIf(n -> {
-					return n.getCode().equals(item.getCode());
+					return n.hashCode()==item.hashCode();
 				});
 			} catch (IncorrectResultSizeDataAccessException | PersistenceException e) {
 				log.error("Ошибка обновения номенклатуры." + System.getProperty("line.separator")
@@ -100,14 +101,14 @@ public class StaffSynchronizationServiceImpl extends SynchronizationServiceImpl 
 		}
 	}
 
-	private List<Staff> mapToStaff(String result, Boolean isGroup) throws IOException {
+	private Set<Staff> mapToStaff(String result) throws IOException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule();
 		StaffDeserializer des = new StaffDeserializer();
 		module.addDeserializer(Staff.class, des);
 		mapper.registerModule(module);
-		List<Staff> list = mapper.readValue(result, new TypeReference<List<Staff>>() {
+		Set<Staff> list = mapper.readValue(result, new TypeReference<List<Staff>>() {
 		});
 
 		return list;

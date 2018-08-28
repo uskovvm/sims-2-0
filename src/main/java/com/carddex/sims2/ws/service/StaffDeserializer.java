@@ -25,9 +25,7 @@ public class StaffDeserializer extends StdDeserializer<Staff> {
 			throws IOException, JsonProcessingException {
 		JsonNode node = jp.getCodec().readTree(jp);
 		String name = node.get("Наименование").asText();
-		String departmentCode = node.get("Код_связанного_Подразделения").asText();
-		String departmentName = node.get("Наименование_связанного_Подразделения").asText();
 
-		return new Staff(name, departmentCode);
+		return new Staff(name);
 	}
 }
