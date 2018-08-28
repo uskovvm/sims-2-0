@@ -14,12 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.carddex.sims2.model.Department;
-import com.carddex.sims2.model.Nomenclature;
 import com.carddex.sims2.model.Staff;
-import com.carddex.sims2.security.repository.DepartmentRepository;
 import com.carddex.sims2.security.repository.StaffRepository;
-import com.carddex.sims2.ws.service.model.DepartmentDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

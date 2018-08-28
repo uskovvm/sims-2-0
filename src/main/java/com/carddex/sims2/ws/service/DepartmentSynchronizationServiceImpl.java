@@ -49,7 +49,7 @@ public class DepartmentSynchronizationServiceImpl extends SynchronizationService
 		List<DepartmentDto> dtoList;
 		try {
 			dtoList = mapToDepartment(result, true);
-			matchNomenclature(dtoList, true, list);
+			synchronize(dtoList, true, list);
 			list.stream().forEach(i -> log.info("----> Запись будет удалена. Код = " + i.toString()));
 			departmentRepository.deleteAll(list);
 		} catch (IOException ioex) {
@@ -76,7 +76,7 @@ public class DepartmentSynchronizationServiceImpl extends SynchronizationService
 		return null;
 	}
 
-	private void matchNomenclature(List<DepartmentDto> items, boolean isGroup, List<Department> list)
+	private void synchronize(List<DepartmentDto> items, boolean isGroup, List<Department> list)
 			throws IncorrectResultSizeDataAccessException, PersistenceException {
 		/*
 		 * Всего 2 прохода. В первом проходе добавляем/модифицируем Во 2-м проходе

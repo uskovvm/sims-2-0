@@ -54,9 +54,9 @@ public class EmployeeSynchronizationServiceImpl extends SynchronizationServiceIm
 		// String result = port.executeQuery(RETRIVE_ALL_EMPLOYERS);
 		String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\employee.json");// Отладка
 		List<EmployeeDto> items = mapToEmployee(result);
-		match(items, list);
+		synchronize(items, list);
 		employeeRepository.deleteAll(list);
-		list.stream().forEach(i -> log.info("----> Запись будет удалена. Код = " + i.toString()));
+		list.stream().forEach(i -> log.info("----> Запись будет удалена. " + i.toString()));
 
 		log.info("Обновление информации о сотрудниках - СТОП.");
 	}
@@ -92,7 +92,7 @@ public class EmployeeSynchronizationServiceImpl extends SynchronizationServiceIm
 		return null;
 	}
 
-	private void match(List<EmployeeDto> items, List<Employee> list) {
+	private void synchronize(List<EmployeeDto> items, List<Employee> list) {
 		for (EmployeeDto item : items) {
 			try {
 				List<Employee> employees = employeeRepository.findByCode1C(item.getCode());
