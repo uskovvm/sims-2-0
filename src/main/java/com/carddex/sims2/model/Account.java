@@ -58,9 +58,6 @@ public class Account implements Serializable {
 	@Column(name = "ORGANIZATION_ID")
 	private int organizationId;
 
-	@Column(name = "ORGANIZATION_ID_1C")
-	private int organizationId1C;
-
 	@Column(name = "PHONE")
 	private String phone;
 
@@ -72,6 +69,9 @@ public class Account implements Serializable {
 
 	@Column(name = "SYNC")
 	private int sync;
+
+	@Column(name = "ORGANIZATION_ID_1C")
+	private int organizationId1C;
 
 	@ManyToOne
 	@JoinColumn(name = "DEPARTMENT_ID", nullable = false)

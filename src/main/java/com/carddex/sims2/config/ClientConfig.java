@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.carddex.sims2.ws.service.DepartmentSynchronizationServiceImpl;
+import com.carddex.sims2.ws.service.EmployeeSynchronizationServiceImpl;
 import com.carddex.sims2.ws.service.NomenclatureSynchronizationServiceImpl;
 import com.carddex.sims2.ws.service.StaffSynchronizationServiceImpl;
 import com.carddex.sims2.ws.service.SynchronizationServiceImpl;
@@ -43,4 +44,8 @@ public class ClientConfig {
 		return new StaffSynchronizationServiceImpl(defaultUri,username, password);
 	}
 
+	@Bean(name="employeeSynchronizationService")
+	public EmployeeSynchronizationServiceImpl employeeSynchronizationService() {
+		return new EmployeeSynchronizationServiceImpl(defaultUri,username, password);
+	}
 }

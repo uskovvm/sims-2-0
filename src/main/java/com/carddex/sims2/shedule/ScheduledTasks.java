@@ -24,6 +24,9 @@ public class ScheduledTasks {
 	@Autowired
 	@Qualifier("staffSynchronizationService")
 	private SinchronizationService staffSynchronizationService;
+	@Autowired
+	@Qualifier("employeeSynchronizationService")
+	private SinchronizationService employeeSynchronizationService;
 
 	
 	@Scheduled(cron = "${nomenclature.synch.shedule}")
@@ -35,8 +38,8 @@ public class ScheduledTasks {
 	@Scheduled(cron = "${structure.synch.shedule}")
 	public void departmentTask() {
 
-		//departmentSynchronizationService.update();
-		staffSynchronizationService.update();
+		departmentSynchronizationService.update();
+		//staffSynchronizationService.update();
+		employeeSynchronizationService.update();
 	}
-
 }
