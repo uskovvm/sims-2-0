@@ -18,9 +18,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+public class NomenclatureSynchronizationServiceImpl extends SynchronizationServiceImpl
+		implements SinchronizationService {
 
-public class NomenclatureSynchronizationServiceImpl extends SynchronizationServiceImpl implements SinchronizationService {
-	
 	private static final Logger log = LoggerFactory.getLogger(NomenclatureSynchronizationServiceImpl.class);
 
 	private static final String RETRIVE_ALL_NOMENCLATURE_GROUPS = "ВЫБРАТЬ Н.Код, Н.Наименование ИЗ Справочник.Номенклатура КАК Н ГДЕ Н.ПометкаУдаления = ЛОЖЬ И Н.ЭтоГруппа = ИСТИНА";
@@ -36,28 +36,20 @@ public class NomenclatureSynchronizationServiceImpl extends SynchronizationServi
 
 	//
 	public void update() {
-		
+
 		log.info("Обновление номенклатуры - СТАРТ.");
-		String result = port.executeQuery("ВЫБРАТЬ ШР.Должность.Наименование КАК Наименование, ШР.Подразделение.Код КАК Код_связанного_Подразделения,"
-				+ " ШР.Подразделение.Наименование КАК Наименование_связанного_Подразделения ИЗ Справочник.ШтатноеРасписание КАК ШР ГДЕ ШР.Утверждена = ИСТИНА"
-				+ " И ШР.Закрыта = ЛОЖЬ И ШР.ПометкаУдаления = ЛОЖЬ");
-		System.out.println(result);
 		List<Nomenclature> list = nomenclatureRepository.findAll();
-		//String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
-		// result =
-		// readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//
-		// Отладка
+		String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
+		// result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//Отладка
 		List<Nomenclature> groups = mapToNomenclature(result, true);
-		matchNomenclature(groups, true, list);
+		synchronize(groups, true, list);
 		result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_ITEMS);
-		// result =
-		// readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//
-		// Отладка
+		// result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//Отладка
 		List<Nomenclature> items = mapToNomenclature(result, false);
-		matchNomenclature(items, false, list);
+		synchronize(items, false, list);
 		nomenclatureRepository.deleteAll(list);
 		list.stream().forEach(i -> log.info("---->  Запись будет удалена. Код = " + i.getCode()));
-		
+
 		log.info("Обновление номенклатуры - СТОП.");
 
 	}
@@ -74,7 +66,7 @@ public class NomenclatureSynchronizationServiceImpl extends SynchronizationServi
 		return null;
 	}
 
-	private void matchNomenclature(List<Nomenclature> items, boolean isGroup, List<Nomenclature> list) {
+	private void synchronize(List<Nomenclature> items, boolean isGroup, List<Nomenclature> list) {
 		for (Nomenclature item : items) {
 			try {
 				Nomenclature nomenclature = nomenclatureRepository.findByCode(item.getCode());
