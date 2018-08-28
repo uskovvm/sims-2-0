@@ -65,12 +65,12 @@ public class NomenclatureSynchronizationServiceImpl extends SynchronizationServi
 			Nomenclature nomenclature = nomenclatureRepository.findByCode(item.getCode());
 			if (nomenclature == null) {
 				nomenclature = nomenclatureRepository.save(new Nomenclature(item.getCode(), item.getName(), item.getShortName()));
-				log.info("---->  Добавена запись. " + item.toString());
+				log.info("---->  Добавена запись. " + nomenclature.toString());
 			} else if (nomenclature.hash() != item.hashCode()) {
 				nomenclature.setName(item.getName());
 				nomenclature.setShortName(item.getShortName());
-				Nomenclature modifedItem = nomenclatureRepository.save(nomenclature);
-				log.info("----> Изменена запись. " + modifedItem.toString());
+				nomenclature = nomenclatureRepository.save(nomenclature);
+				log.info("----> Изменена запись. " + nomenclature.toString());
 			}
 			list.removeIf(n -> {
 				return n.getCode().equals(item.getCode());
