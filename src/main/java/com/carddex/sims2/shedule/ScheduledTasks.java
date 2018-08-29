@@ -37,9 +37,8 @@ public class ScheduledTasks {
 
 	@Scheduled(cron = "${structure.synch.shedule}")
 	public void departmentTask() {
-
-		//departmentSynchronizationService.update();
-		//staffSynchronizationService.update();
-		//employeeSynchronizationService.update();
+		staffSynchronizationService.update();
+		departmentSynchronizationService.update();
+		employeeSynchronizationService.update();
 	}
 }

@@ -51,8 +51,8 @@ public class EmployeeSynchronizationServiceImpl extends SynchronizationServiceIm
 		log.info("Обновление информации о сотрудниках - СТАРТ.");
 
 		List<Employee> list = employeeRepository.findAll();
-		// String result = port.executeQuery(RETRIVE_ALL_EMPLOYERS);
-		String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\employee.json");// Отладка
+		String result = port.executeQuery(RETRIVE_ALL_EMPLOYERS);
+		//String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\employee.json");// Отладка
 		List<EmployeeDto> items = mapToEmployee(result);
 		synchronize(items, list);
 		employeeRepository.deleteAll(list);
