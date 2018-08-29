@@ -2,10 +2,6 @@ package com.carddex.sims2.ws.service;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.carddex.sims2.model.Nomenclature;
-import com.carddex.sims2.security.repository.NomenclatureRepository;
 import com.carddex.sims2.ws.service.model.NomenclatureDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,13 +30,11 @@ public class NomenclatureDeserializer extends StdDeserializer<NomenclatureDto> {
 		String shortName = "";
 		String parentName = "";
 		String parentCode = "";
-		NomenclatureDto group = null;
 		if(!isGroup) {
 			shortName = node.get("НаименованиеКраткое").asText();
 			parentName = node.get("Родитель").asText();
 			parentCode = node.get("РодительКод").asText();
 		}
-
 		return new NomenclatureDto(code, name, shortName, parentName, parentCode, isGroup);
 	}
 

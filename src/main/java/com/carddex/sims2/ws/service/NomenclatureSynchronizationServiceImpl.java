@@ -38,11 +38,11 @@ public class NomenclatureSynchronizationServiceImpl extends SynchronizationServi
 
 		log.info("Обновление номенклатуры - СТАРТ.");
 		List<Nomenclature> list = nomenclatureRepository.findAll();
-		//String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
-		String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//Отладка
+		String result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_GROUPS);
+		//String result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\groups.json");//Отладка
 		List<NomenclatureDto> groups = mapToNomenclature(result, true);
-		//result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_ITEMS);
-		result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//Отладка
+		result = port.executeQuery(RETRIVE_ALL_NOMENCLATURE_ITEMS);
+		//result = readJson("d:\\workspaces\\carddex-workspace\\sims-2-0\\items.json");//Отладка
 		List<NomenclatureDto> items = mapToNomenclature(result, false);
 		items.addAll(groups);
 		
